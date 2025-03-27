@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.esthiti.horoscopeandroid.data.Horoscope
 
-class HoroscopeAdapter(val items : List<Horoscope>) : Adapter<HoroscopeViewHolder>() {
+class HoroscopeAdapter(val items : List<Horoscope>, val onItemClick: (Int) -> Unit) : Adapter<HoroscopeViewHolder>() {
     /**
      * Called when RecyclerView needs a new [ViewHolder] of the given type to represent
      * an item.
@@ -72,10 +72,17 @@ class HoroscopeAdapter(val items : List<Horoscope>) : Adapter<HoroscopeViewHolde
      * @param position The position of the item within the adapter's data set.
      */
     override fun onBindViewHolder(holder: HoroscopeViewHolder, position: Int) {
-        // Voy a mostrar la lacelda en la posición indicada
+        // Voy a mostrar la celda en la posición indicada
         val horoscope = items[position]
 
         holder.render(horoscope)
+
+
+        // Navegar al detalle
+        holder.itemView.setOnClickListener {
+            onItemClick(position)
+        }
+
     }
 }
 

@@ -13,6 +13,9 @@
         android:theme="@style/Theme.Horoscope_Android"
         tools:targetApi="31">
         <activity
+            android:name=".actvities.DetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".actvities.MainActivity"
             android:exported="true">
             <intent-filter>
