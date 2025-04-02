@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="horizontal"
     android:padding="8dp">
 
     <ImageView
         android:id="@+id/ivIcon"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:src="@drawable/aries_icon"/>
+        android:src="@drawable/aries_icon" />
+
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_weight="1"
+        android:layout_height="80dp"
         android:layout_marginStart="8dp"
-        android:gravity="center_vertical">
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/tvHoroscopeName"
@@ -24,7 +26,7 @@
             android:layout_height="wrap_content"
             android:text="@string/horoscope_name_aries"
             android:textSize="24sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
 
         <TextView
@@ -32,9 +34,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/horoscope_date_aries"
-            android:textSize="24sp"
-            android:textStyle="bold"/>
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivFavorite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/ic_favorite_selected"
+        app:tint="@color/favorite" />
 
 </LinearLayout>

@@ -8,8 +8,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.esthiti.horoscopeandroid.data.Horoscope
+import com.esthiti.horoscopeandroid.utils.SessionManager
 
-class HoroscopeAdapter(val items : List<Horoscope>, val onItemClick: (Int) -> Unit) : Adapter<HoroscopeViewHolder>() {
+class HoroscopeAdapter(var items : List<Horoscope>, val onItemClick: (Int) -> Unit) : Adapter<HoroscopeViewHolder>() {
     /**
      * Called when RecyclerView needs a new [ViewHolder] of the given type to represent
      * an item.
@@ -84,6 +85,11 @@ class HoroscopeAdapter(val items : List<Horoscope>, val onItemClick: (Int) -> Un
         }
 
     }
+
+    fun updateItems(items : List<Horoscope>){
+        this.items = items
+        notifyDataSetChanged()
+    }
 }
 
 class HoroscopeViewHolder(view : View) : ViewHolder(view){
@@ -91,11 +97,23 @@ class HoroscopeViewHolder(view : View) : ViewHolder(view){
     val tvHoroscopeName : TextView = view.findViewById(R.id.tvHoroscopeName)
     val tvDates : TextView = view.findViewById(R.id.tvDates)
     val ivIcon : ImageView = view.findViewById(R.id.ivIcon)
+    val ivFavorite : ImageView = view.findViewById(R.id.ivFavorite)
 
     //
     fun render(horoscope: Horoscope){
         tvHoroscopeName.setText(horoscope.name)
         tvDates.setText(horoscope.dates)
         ivIcon.setImageResource(horoscope.icon)
+
+        val session = SessionManager(itemView.context)
+
+        // Hay favorito en la sesión?
+        if (session.getFavoriteHoroscope() == horoscope.id){
+            // Mostramos el icono favorito
+            ivFavorite.visibility = View.VISIBLE
+        } else {
+            // No se muestra el icono favorito
+            ivFavorite.visibility = View.GONE
+        }
     }
 }
