@@ -3,9 +3,11 @@ package com.esthiti.horoscopeandroid.actvities
 import android.content.ClipData.Item
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -13,16 +15,29 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.transition.Visibility
 import com.esthiti.horoscopeandroid.R
 import com.esthiti.horoscopeandroid.data.Horoscope
 import com.esthiti.horoscopeandroid.data.HoroscopeProvider
 import com.esthiti.horoscopeandroid.utils.SessionManager
+import com.google.android.material.progressindicator.LinearProgressIndicator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
+import javax.net.ssl.HttpsURLConnection
 
 class DetailActivity : AppCompatActivity() {
 
     lateinit var ivIcon : ImageView
     lateinit var tvHoroscopeName : TextView
     lateinit var tvDates : TextView
+    lateinit var horoscopeLuckTextView : TextView
+    lateinit var progressBar : LinearProgressIndicator
 
     // Variables de session para controlar el item favorito
     lateinit var session : SessionManager
@@ -46,6 +61,8 @@ class DetailActivity : AppCompatActivity() {
         ivIcon = findViewById(R.id.ivIcon)
         tvHoroscopeName = findViewById(R.id.tvHoroscopeName)
         tvDates = findViewById(R.id.tvDates)
+        horoscopeLuckTextView = findViewById(R.id.horoscopeLuckTextView)
+        progressBar = findViewById(R.id.progressBar)
 
         // Se añade los signos !! para forzar a que acepte que siempre va a devolver datos, que no será null
         val id = intent.getStringExtra("HOROSCOPE_ID")!!
@@ -61,6 +78,8 @@ class DetailActivity : AppCompatActivity() {
 
         // Mensaje tipo alert al usuario
         Toast.makeText(this, getString(horoscope.name), Toast.LENGTH_SHORT).show()
+
+        getHoroscopeLuck()
     }
 
 
@@ -118,5 +137,47 @@ class DetailActivity : AppCompatActivity() {
         } else{
             favoriteMenuItem.setIcon(R.drawable.ic_favorite)
         }
+    }
+
+    fun getHoroscopeLuck(){
+        progressBar.visibility = View.VISIBLE
+
+        CoroutineScope(Dispatchers.IO).launch {
+            var url = URL("https://horoscope-app-api.vercel.app/api/v1/get-horoscope/daily?sign=${horoscope.id}")
+
+            // HTTP Connection
+            val urlConnection = url.openConnection() as HttpsURLConnection
+
+            // Method
+            urlConnection.requestMethod = "GET"
+
+            try {
+                if (urlConnection.responseCode == HttpURLConnection.HTTP_OK) {
+                    // Read the response
+                    val bufferedReader = BufferedReader(InputStreamReader(urlConnection.inputStream))
+                    val response = StringBuffer()
+                    var inputLine: String? = null
+
+                    while ((bufferedReader.readLine().also { inputLine = it }) != null) {
+                        response.append(inputLine)
+                    }
+                    bufferedReader.close()
+
+                    val result = JSONObject(response.toString()).getJSONObject("data").getString("horoscope_data")
+
+                    CoroutineScope(Dispatchers.Main).launch {
+                        progressBar.visibility = View.GONE
+                        horoscopeLuckTextView.text = result
+                    }
+                } else {
+                    Log.i("API", "Hubo un error en la llamada al API")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                urlConnection.disconnect()
+            }
+        }
+
     }
 }
